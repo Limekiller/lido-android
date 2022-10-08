@@ -26,6 +26,9 @@ public class MainActivity extends Activity {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
+        // Since this is supposed to be a generic app for any Lido deployment,
+        // we don't assume that they've deployed SSL. Intercept any http:// requests and
+        // rewrite them to https://. Also, ignore certificate errors.
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
@@ -34,7 +37,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError er) {
-                handler.proceed(); // Ignore SSL certificate errors
+                handler.proceed();
             }
 
             @Override
@@ -54,7 +57,7 @@ public class MainActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         int height = metrics.heightPixels;
-        double multiplier = (height / 720.0);jj
+        double multiplier = (height / 720.0);
         double scale = 80 * multiplier;
 
         webView.getSettings().setLoadWithOverviewMode(true);

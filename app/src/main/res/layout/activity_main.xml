@@ -6,6 +6,6 @@
     <com.bryceyoder.lido.LidoWebView
         android:id="@+id/main_webview"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_height="fill_parent"/>
 
 </LinearLayout>
