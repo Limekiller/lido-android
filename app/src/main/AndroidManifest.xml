@@ -20,7 +20,7 @@
         android:theme="@style/Theme.Lido" >
 
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:banner="@drawable/lido"
             android:icon="@drawable/lido"
             android:logo="@drawable/lido"
@@ -33,7 +33,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+        <activity android:name=".MainActivity"></activity>
+
     </application>
 
 </manifest>

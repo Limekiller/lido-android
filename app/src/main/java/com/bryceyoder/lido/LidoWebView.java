@@ -2,11 +2,7 @@ package com.bryceyoder.lido;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.inputmethod.BaseInputConnection;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputConnection;
 import android.webkit.WebView;
 
 import java.util.HashMap;
@@ -18,19 +14,27 @@ public class LidoWebView extends WebView {
         super(context, attrs);
     }
 
+    /**
+     * I ALREADY did tons of work implementing spatial nav in Lido via the keyboard,
+     * and there's a bunch of edge-cases that I specifically programmed for that
+     * the basic, ootb AndroidTV spatial nav can't handle. So here we're intercepting
+     * any remote presses and translating them into simulated keypresses in JS
+     *
+     * @param event The KeyEvent that triggers the method
+     * @return boolean True to cancel the original remote event, false to allow it through
+     */
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         final int keyCode = event.getKeyCode();
         final int keyAction = event.getAction();
 
-        Map<Integer, String[]> keyCodeList = new HashMap<Integer, String[]>();
+        // Mapping AndroidTV remote keyCodes to JavaScript keyCodes
+        Map<Integer, String[]> keyCodeList = new HashMap<>();
         keyCodeList.put(19, new String[] {"38", "ArrowUp"}); // up
         keyCodeList.put(22, new String[] {"39", "ArrowRight"}); // right
         keyCodeList.put(20, new String[] {"40", "ArrowDown"}); // down
         keyCodeList.put(21, new String[] {"37", "ArrowLeft"}); // left
         keyCodeList.put(23, new String[] {"13", "Enter"}); // enter
-
-        Log.d("keycode", String.valueOf(keyCode));
 
         if (keyAction == KeyEvent.ACTION_DOWN) {
             // Whoo boy, the enter button is tricky.
@@ -38,10 +42,11 @@ public class LidoWebView extends WebView {
             // But this doesn't exist on buttons and divs, so we dispatch an event
             // But in SOME cases, the active element isn't the one with the listener --
             // the child has the listener -- so we also check that case
-            // an dispatch the listener on the child if need be
+            // and dispatch the listener on the child if need be
             // Finally, we fire one more event with the "Enter" code as some things listen for that instead.
             if (Objects.equals(keyCodeList.get(keyCode)[0], "13")) {
                 loadUrl(
+                    // (First, we create a reusable keyboard event for this if it doesn't exist)
                     "javascript:if (typeof mEvent === 'undefined') {" +
                         "var mEvent = document.createEvent('MouseEvents');" +
                         "mEvent.initEvent('click', true, true);" +
@@ -64,6 +69,7 @@ public class LidoWebView extends WebView {
                 return true;
             }
 
+            // If it's not the enter button, easy -- just dispatch an event for it
             loadUrl(
                 "javascript:document.dispatchEvent(new KeyboardEvent('keydown', {" +
                     "keyCode: " + keyCodeList.get(keyCode)[0] + "," +

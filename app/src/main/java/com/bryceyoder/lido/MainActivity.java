@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -12,9 +11,17 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+    private String domain;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            this.domain = extras.getString("domain");
+        }
+
         setContentView(R.layout.activity_main);
     }
 
@@ -63,6 +70,6 @@ public class MainActivity extends Activity {
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.setInitialScale((int)scale);
 
-        webView.loadUrl("https://media.bryceyoder.com/");
+        webView.loadUrl("https://" + this.domain);
     }
 }
