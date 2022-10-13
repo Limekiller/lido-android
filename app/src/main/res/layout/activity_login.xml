@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <Space
         android:layout_width="33dp"
@@ -16,6 +17,15 @@
         android:orientation="vertical"
         android:gravity="center">
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animationView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="-100dp"
+            android:layout_marginBottom="-50dp"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="false"
+            app:lottie_url="https://assets8.lottiefiles.com/packages/lf20_PclCeNBIjw.json" />
 
         <TextView
             android:id="@+id/editTextURLLabel"
@@ -34,13 +44,30 @@
             android:hint="media.bryceyoder.com"
             android:inputType="textUri" />
 
+        <TextView
+            android:id="@+id/editTextPasswordLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="Lido password" />
+
+        <EditText
+            android:id="@+id/editTextTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/background"
+            android:ems="10"
+            android:hint="********"
+            android:inputType="textPassword" />
+
         <Button
             android:id="@+id/connectButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/background"
             android:text="Go"
-            android:onClick="connect"/>
+            android:onClick="onClick"/>
 
     </LinearLayout>
 

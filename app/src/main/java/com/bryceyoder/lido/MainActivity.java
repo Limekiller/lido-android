@@ -4,14 +4,21 @@ import android.app.Activity;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 public class MainActivity extends Activity {
     private String domain;
+    private String sessionToken;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,6 +27,9 @@ public class MainActivity extends Activity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             this.domain = extras.getString("domain");
+            if (extras.getString("sessionToken") != null) {
+                this.sessionToken = extras.getString("sessionToken");
+            }
         }
 
         setContentView(R.layout.activity_main);
@@ -57,6 +67,10 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
+
+        if (this.sessionToken != null) {
+            CookieManager.getInstance().setCookie("https://" + domain, "__Secure-next-auth.session-token=" + sessionToken + ";secure");
+        }
 
         // Using 720p as a base with scale at 80,
         // determine what scale should be for current resolution
