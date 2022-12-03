@@ -2,6 +2,7 @@ package com.bryceyoder.lido;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.webkit.WebView;
 
@@ -35,8 +36,10 @@ public class LidoWebView extends WebView {
         keyCodeList.put(20, new String[] {"40", "ArrowDown"}); // down
         keyCodeList.put(21, new String[] {"37", "ArrowLeft"}); // left
         keyCodeList.put(23, new String[] {"13", "Enter"}); // enter
+        keyCodeList.put(4, new String[] {"0", "None"}); // back (but don't do anything)
 
         if (keyAction == KeyEvent.ACTION_DOWN) {
+
             // Whoo boy, the enter button is tricky.
             // For links, we have to call .click()
             // But this doesn't exist on buttons and divs, so we dispatch an event
@@ -79,6 +82,10 @@ public class LidoWebView extends WebView {
                 "}))"
             );
         } else if (keyAction == KeyEvent.ACTION_UP) {
+            if (checkOrFireBackEvent(keyCode)) {
+                return true;
+            };
+
             loadUrl(
                 "javascript:document.dispatchEvent(new KeyboardEvent('keyup', {" +
                     "keyCode: " + keyCodeList.get(keyCode)[0] + "," +
@@ -90,5 +97,15 @@ public class LidoWebView extends WebView {
         }
 
         return true;
+    }
+
+    private boolean checkOrFireBackEvent(int keyCode) {
+        if (keyCode == 4) {
+            if (this.canGoBack()) {
+                this.goBack();
+            }
+            return true;
+        }
+        return false;
     }
 }

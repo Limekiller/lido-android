@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends Activity {
     private String domain;
     private String sessionToken;
+    private WebView webView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,7 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        WebView webView = findViewById(R.id.main_webview);
+        this.webView = findViewById(R.id.main_webview);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
@@ -86,5 +87,15 @@ public class MainActivity extends Activity {
         webView.setInitialScale((int)scale);
 
         webView.loadUrl("https://" + this.domain);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("why", "why");
+        if(webView.canGoBack()){
+            webView.goBack();
+        } else {
+            finish();
+        }
     }
 }
