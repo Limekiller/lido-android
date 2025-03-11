@@ -44,23 +44,6 @@
             android:hint="media.bryceyoder.com"
             android:inputType="textUri" />
 
-        <TextView
-            android:id="@+id/editTextPasswordLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:text="Lido password" />
-
-        <EditText
-            android:id="@+id/editTextTextPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/background"
-            android:ems="10"
-            android:hint="********"
-            android:inputType="textPassword" />
-
         <Button
             android:id="@+id/connectButton"
             android:layout_width="match_parent"
