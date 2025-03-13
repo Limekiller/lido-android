@@ -44,6 +44,7 @@ public class MainActivity extends Activity {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
 
         // Since this is supposed to be a generic app for any Lido deployment,
         // we don't assume that they've deployed SSL. Intercept any http:// requests and
