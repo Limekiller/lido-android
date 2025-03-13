@@ -5,6 +5,11 @@ An Android/GoogleTV app for [Lido](https://github.com/Limekiller/lido)
 Install on your TV now to access Lido directly from your TV, using your remote to navigate!
 
 ### Download below:
+##### March 11, 2025 release
+- Reformat login view to support Lido V3
+
+[lido_android_20250311.zip](https://github.com/Limekiller/lido-android/releases/download/v20250311/lido_android_20250311.apk)
+
 ##### December 02, 2022 release
 - Allow Android back action to control web view navigation
 
