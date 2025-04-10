@@ -11,9 +11,21 @@ import java.util.Map;
 import java.util.Objects;
 
 public class LidoWebView extends WebView {
-    public LidoWebView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+    public LidoWebView(Context context, AttributeSet attrs) { super(context, attrs); }
+
+    // Map AndroidTV remote keyCodes to JavaScript keyCodes
+    final private Map<Integer, String[]> keyCodeList = new HashMap<Integer, String[]>() {{
+        put(19, new String[] {"38", "ArrowUp"}); // up
+        put(22, new String[] {"39", "ArrowRight"}); // right
+        put(20, new String[] {"40", "ArrowDown"}); // down
+        put(21, new String[] {"37", "ArrowLeft"}); // left
+        put(23, new String[] {"13", "Enter"}); // enter
+        put(4, new String[] {"0", "None"}); // back (but don't do anything)
+    }};
+
+    // Track how long the enter button is held down
+    private Integer amountHeld = 0;
+    private Boolean contextMenuOpen = false;
 
     /**
      * I ALREADY did tons of work implementing spatial nav in Lido via the keyboard,
@@ -29,25 +41,43 @@ public class LidoWebView extends WebView {
         final int keyCode = event.getKeyCode();
         final int keyAction = event.getAction();
 
-        // Mapping AndroidTV remote keyCodes to JavaScript keyCodes
-        Map<Integer, String[]> keyCodeList = new HashMap<>();
-        keyCodeList.put(19, new String[] {"38", "ArrowUp"}); // up
-        keyCodeList.put(22, new String[] {"39", "ArrowRight"}); // right
-        keyCodeList.put(20, new String[] {"40", "ArrowDown"}); // down
-        keyCodeList.put(21, new String[] {"37", "ArrowLeft"}); // left
-        keyCodeList.put(23, new String[] {"13", "Enter"}); // enter
-        keyCodeList.put(4, new String[] {"0", "None"}); // back (but don't do anything)
-
         if (keyAction == KeyEvent.ACTION_DOWN) {
+            // Most operations we perform on key down, except for Enter
+            // -- because we need to be able to detect a long press here
+            if (Objects.equals(keyCodeList.get(keyCode)[0], "13")) {
+                if (amountHeld < 10) {
+                    amountHeld++;
+                } else {
+                    contextMenuOpen = true;
+                    loadUrl(
+                        "javascript:document.lastActiveElem = document.activeElement;" +
+                        "document.lastActiveElem.dispatchEvent(new MouseEvent('contextmenu', {" +
+                            "bubbles: true" +
+                        "}))"
+                    );
+                }
+                return true;
+            }
 
-            // Whoo boy, the enter button is tricky.
+            // If it's not the enter button, just dispatch an event for it
+            loadUrl(
+                "javascript:document.dispatchEvent(new KeyboardEvent('keydown', {" +
+                    "keyCode: " + keyCodeList.get(keyCode)[0] + "," +
+                    "key: " + keyCodeList.get(keyCode)[0] + "," +
+                    "code: '" + keyCodeList.get(keyCode)[1] + "'," +
+                    "bubbles: true" +
+                "}))"
+            );
+
+        } else if (keyAction == KeyEvent.ACTION_UP) {
+
             // For links, we have to call .click()
             // But this doesn't exist on buttons and divs, so we dispatch an event
             // But in SOME cases, the active element isn't the one with the listener --
             // the child has the listener -- so we also check that case
             // and dispatch the listener on the child if need be
             // Finally, we fire one more event with the "Enter" code as some things listen for that instead.
-            if (Objects.equals(keyCodeList.get(keyCode)[0], "13")) {
+            if (Objects.equals(keyCodeList.get(keyCode)[0], "13") && amountHeld < 10) {
                 loadUrl(
                     // (First, we create a reusable keyboard event for this if it doesn't exist)
                     "javascript:if (typeof mEvent === 'undefined') {" +
@@ -55,7 +85,7 @@ public class LidoWebView extends WebView {
                         "mEvent.initEvent('click', true, true);" +
                     "}" +
                     "if (document.activeElement.children[0]" +
-                            "&& typeof document.activeElement.children[0].click === 'function') {" +
+                        "&& typeof document.activeElement.children[0].click === 'function') {" +
                         "document.activeElement.children[0].click();" +
                     "} else if (typeof document.activeElement.click === 'function'){" +
                         "document.activeElement.click();" +
@@ -72,19 +102,9 @@ public class LidoWebView extends WebView {
                 return true;
             }
 
-            // If it's not the enter button, easy -- just dispatch an event for it
-            loadUrl(
-                "javascript:document.dispatchEvent(new KeyboardEvent('keydown', {" +
-                    "keyCode: " + keyCodeList.get(keyCode)[0] + "," +
-                    "key: " + keyCodeList.get(keyCode)[0] + "," +
-                    "code: '" + keyCodeList.get(keyCode)[1] + "'," +
-                    "bubbles: true" +
-                "}))"
-            );
-        } else if (keyAction == KeyEvent.ACTION_UP) {
             if (checkOrFireBackEvent(keyCode)) {
                 return true;
-            };
+            }
 
             loadUrl(
                 "javascript:document.dispatchEvent(new KeyboardEvent('keyup', {" +
@@ -96,14 +116,22 @@ public class LidoWebView extends WebView {
             );
         }
 
+        amountHeld = 0;
         return true;
     }
 
     private boolean checkOrFireBackEvent(int keyCode) {
         if (keyCode == 4) {
+            if (contextMenuOpen) {
+                contextMenuOpen = false;
+                loadUrl("javascript:document.body.click();");
+                return true;
+            }
+
             if (this.canGoBack()) {
                 this.goBack();
             }
+
             return true;
         }
         return false;
