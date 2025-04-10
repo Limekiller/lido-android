@@ -5,6 +5,11 @@ An Android/GoogleTV app for [Lido](https://github.com/Limekiller/lido)
 Install on your TV now to access Lido directly from your TV, using your remote to navigate!
 
 ### Download below:
+##### April 09, 2025 release
+- Enable initial support for context-menu on long press
+
+[lido_android_20250409.apk](https://github.com/Limekiller/lido-android/releases/download/v20250409/lido_android_20250409.apk)
+
 ##### March 12, 2025 release
 - Disable required user gesture for playback
 
